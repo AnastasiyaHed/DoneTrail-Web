@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>DoneTrail Web</h1>
+
+    <form action="{{ url_for('add_task') }}" method="post">
+        <input type="text" name="title" placeholder="Enter task title">
+        <button type="submit">Add task</button>
+    </form>
+
+    <hr>
+
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    {% if task.done %}
+                        <s>{{ task.title }}</s>
+                    {% else %}
+                        {{ task.title }}
+                    {% endif %}
+
+                    | created: {{ task.created_at }}
+
+                    {% if not task.done %}
+                        <a href="{{ url_for('mark_done', task_id=task.id) }}">Done</a>
+                    {% endif %}
+
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tasks found.</p>
+    {% endif %}
+{% endblock %}
