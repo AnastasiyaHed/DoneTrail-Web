@@ -1,36 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>DoneTrail Web</h1>
+    <section class="header">
+        <h1>DoneTrail Web</h1>
+        <p>A small Flask app for tracking personal tasks.</p>
+    </section>
 
-    <form action="{{ url_for('add_task') }}" method="post">
+    <form class="task-form" action="{{ url_for('add_task') }}" method="post">
         <input type="text" name="title" placeholder="Enter task title">
         <button type="submit">Add task</button>
     </form>
 
-    <hr>
+    <nav class="filters">
+        <a href="{{ url_for('index') }}" class="{% if status == 'all' %}active{% endif %}">All</a>
+        <a href="{{ url_for('index', status='active') }}" class="{% if status == 'active' %}active{% endif %}">Active</a>
+        <a href="{{ url_for('index', status='done') }}" class="{% if status == 'done' %}active{% endif %}">Completed</a>
+    </nav>
 
     {% if tasks %}
-        <ul>
+        <ul class="task-list">
             {% for task in tasks %}
-                <li>
-                    {% if task.done %}
-                        <s>{{ task.title }}</s>
-                    {% else %}
-                        {{ task.title }}
-                    {% endif %}
+                <li class="task-item {% if task.done %}completed{% endif %}">
+                    <div>
+                        {% if task.done %}
+                            <s>{{ task.title }}</s>
+                        {% else %}
+                            {{ task.title }}
+                        {% endif %}
+                        <small>created: {{ task.created_at }}</small>
+                    </div>
 
-                    | created: {{ task.created_at }}
-
-                    {% if not task.done %}
-                        <a href="{{ url_for('mark_done', task_id=task.id) }}">Done</a>
-                    {% endif %}
-
-                    <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                    <div class="task-actions">
+                        {% if not task.done %}
+                            <a href="{{ url_for('mark_done', task_id=task.id) }}">Done</a>
+                        {% endif %}
+                        <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No tasks found.</p>
+        <p class="empty">No tasks found.</p>
     {% endif %}
 {% endblock %}
